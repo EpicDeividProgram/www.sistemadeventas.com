@@ -1,7 +1,7 @@
 <?php
 global $roles_datos;
 include ('../app/config.php');
-include ('../app/controllers/categorias/listado_de_categorias.php');
+include('../app/controllers/ventas/listado_de_ventas.php');
 global$pdo;
 $URL = "http://localhost/www.sistemadeventas.com";
 session_start();
@@ -47,8 +47,6 @@ scratch. This page gets rid of all links and provides the needed markup only.
     <link rel="stylesheet" href="<?php echo $URL?>/public/templeates/AdminLTE-3.2.0/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
     <link rel="stylesheet" href="<?php echo $URL?>/public/templeates/AdminLTE-3.2.0/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
 
-    <!-- jQuery -->
-    <script src="<?php echo $URL?>/public/templeates/AdminLTE-3.2.0/plugins/jquery/jquery.min.js"></script>
 
     <!-- libreria SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -281,7 +279,6 @@ scratch. This page gets rid of all links and provides the needed markup only.
                         </ul>
                     </li>
 
-
                     <li class="nav-item">
                         <a href="<?php echo $URL;?>/app/controllers/login/cerrar_sesion.php" class="nav-link" style="background-color: #8B4545">
                             <i class="nav-icon fas fa-door-closed"></i>
@@ -308,16 +305,13 @@ scratch. This page gets rid of all links and provides the needed markup only.
             <div class="container-fluid">
                 <div class="row mb-2">
                     <div class="col-sm-12">
-                        <h1 class="m-0">Listado De Categorias
-                            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modal-create">
-                                <i class="fa fa-plus-circle"></i> Crear Categoria
-                            </button>
-                        </h1>
+                        <h1 class="m-0">Listado de Ventas</h1>
                     </div><!-- /.col -->
                 </div><!-- /.row -->
             </div><!-- /.container-fluid -->
         </div>
         <!-- /.content-header -->
+
 
         <!-- Main content -->
         <div class="content">
@@ -327,115 +321,160 @@ scratch. This page gets rid of all links and provides the needed markup only.
                     <div class="col-md-12">
                         <div class="card card-outline card-primary">
                             <div class="card-header">
-                                <h3 class="card-title">Categorias Registradas</h3>
+                                <h3 class="card-title">Ventas Registradas</h3>
                                 <div class="card-tools">
                                     <button type="button" class="btn btn-tool" data-card-widget="collapse"><i class="fas fa-minus"></i>
                                     </button>
                                 </div>
+
                             </div>
+
                             <div class="card-body" style="display: block;">
-                                <table id="example1" class="table table-bordered table-striped">
-                                    <thead>
-                                    <tr>
-                                        <th><center>Nro</center></th>
-                                        <th><center>Nombre de la categoria</center></th>
-                                        <th><center>Fecha de Creacion</center></th>
-                                        <th><center>Acciones</center></th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    <?php
-                                    $contados = 0;
-                                    foreach ($categorias_datos as $categorias_dato){
-                                        $id_categoria = $categorias_dato['id_categoria'];
-                                        $nombre_categoria = $categorias_dato['nombre_categoria'];?>
+                                <div class="table table-responsive">
+                                    <table id="example1" class="table table-bordered table-striped table-sm">
+                                        <thead>
                                         <tr>
-                                            <td><?php echo $contados = $contados + 1?></td>
-                                            <td><?php echo $categorias_dato['nombre_categoria'];?></td>
-                                            <td><?php echo $categorias_dato['fyh_creacion'];?></td>
-                                            <td><center>
-                                                    <div class="btn-group">
-                                                        <button type="button" class="btn btn-success" data-toggle="modal" data-target="#modal-update<?php echo $id_categoria;?>">
-                                                            <i class="fa fa-pencil-alt"></i> Actualizar Categoria
+                                            <th><center>Nro</center></th>
+                                            <th><center>Nro de venta</center></th>
+                                            <th><center>Productos</center></th>
+                                            <th><center>Clientes</center></th>
+                                            <th><center>Total</center></th>
+                                            <th><center>Acciones</center></th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <?php
+                                        $contador = 0;
+                                        foreach ($ventas_datos as $ventas_dato) {
+                                            $id_venta = $ventas_dato['id_venta'];
+                                            $contador = $contador + 1;
+                                            ?>
+
+                                            <tr>
+                                                <td><center><?php echo $contador; ?></center></td>
+                                                <td><center><?php echo $ventas_dato['nro_venta']; ?></center></td>
+                                                <td>
+                                                    <center>
+                                                        <!-- Button trigger modal -->
+                                                        <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#Modal_productos<?php echo $id_venta; ?>">
+                                                            Productos
                                                         </button>
-                                                        <!-- /.modal actualizacion de una categoria -->
-                                                        <div class="modal fade" id="modal-update<?php echo $id_categoria;?>">
-                                                            <div class="modal-dialog">
+
+                                                        <!-- Modal -->
+                                                        <div class="modal fade" id="Modal_productos<?php echo $id_venta; ?>" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                                            <div class="modal-dialog modal-lg">
                                                                 <div class="modal-content">
-                                                                    <div class="modal-header" style="background-color: #0e5b44; color: white">
-                                                                        <h4 class="modal-title">Actualizar Categoria</h4>
+                                                                    <div class="modal-header" style="background-color: #7FFFD4;">
+                                                                        <h5 class="modal-title" id="exampleModalLabel">Productos de la Venta Nro <?php echo $ventas_dato['nro_venta']; ?></h5>
                                                                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                                                             <span aria-hidden="true">&times;</span>
                                                                         </button>
                                                                     </div>
                                                                     <div class="modal-body">
-                                                                        <div class="row">
-                                                                            <div class="col-md-12">
-                                                                                <div>
-                                                                                    <label for="a">Nombre de la categoria</label>
-                                                                                    <input type="text" class="form-control" id="nombre_categoria<?php echo $id_categoria;?>" value="<?php echo $nombre_categoria?>"</input>
-                                                                                    <small style="color: darkred;display: none" id="lbl_update<?php echo $id_categoria;?>">* Este campo no debe estar vacio</small>
-                                                                                </div>
-                                                                            </div>
+                                                                        <div class="table-responsive">
+                                                                            <table class="table table-bordered table-sm table-hover table-striped">
+                                                                                <thead>
+                                                                                <tr>
+                                                                                    <th style="background-color: #e7e7e7; text-align: center">Nro</th>
+                                                                                    <th style="background-color: #e7e7e7; text-align: center">Producto</th>
+                                                                                    <th style="background-color: #e7e7e7; text-align: center">Descripción</th>
+                                                                                    <th style="background-color: #e7e7e7; text-align: center">Cantidad</th>
+                                                                                    <th style="background-color: #e7e7e7; text-align: center">Precio Unitario</th>
+                                                                                    <th style="background-color: #e7e7e7; text-align: center">Precio Subtotal</th>
+                                                                                </tr>
+                                                                                </thead>
+                                                                                <tbody>
+                                                                                <?php
+                                                                                $nro_venta = $ventas_dato['nro_venta'];
+                                                                                $contador_de_carrito = 0;
+                                                                                $total = 0;
+                                                                                $sql_carrito = "SELECT *, pro.nombre as nombre, pro.descripcion as descripcion, pro.precio_venta as precio, pro.stock as stock, pro.id_producto as id_producto 
+                                                                                                    FROM tb_carrito as carr INNER JOIN tb_almacen as pro on carr.id_producto = pro.id_producto WHERE nro_venta = '$nro_venta' ORDER BY id_carrito ASC";
+                                                                                $query_carrito = $pdo->prepare($sql_carrito);
+                                                                                $query_carrito->execute();
+                                                                                $carrito_datos = $query_carrito->fetchAll(PDO::FETCH_ASSOC);
+                                                                                foreach ($carrito_datos as $carrito_dato) {
+                                                                                    $contador_de_carrito = $contador_de_carrito + 1;
+                                                                                    $id_carrito = $carrito_dato['id_carrito'];
+                                                                                    ?>
+
+                                                                                    <tr>
+                                                                                        <td>
+                                                                                            <center><?php echo $contador_de_carrito; ?></center>
+                                                                                            <input type="text" value="<?php echo $carrito_dato['id_producto']; ?>" id="id_producto<?php echo $contador_de_carrito; ?>" hidden>
+                                                                                        </td>
+                                                                                        <td><center><?php echo $carrito_dato['nombre']; ?></center></td>
+                                                                                        <td><center><?php echo $carrito_dato['descripcion']; ?></center></td>
+                                                                                        <td>
+                                                                                            <center><span id="cantidad_carrito<?php echo $contador_de_carrito; ?>"><?php echo $carrito_dato['cantidad']; ?></span></center>
+                                                                                            <input type="text" value="<?php echo $carrito_dato['stock']; ?>" id="stock_de_inventario<?php echo $contador_de_carrito; ?>" hidden>
+                                                                                        </td>
+                                                                                        <td><center><?php echo $carrito_dato['precio']; ?></center></td>
+                                                                                        <td>
+                                                                                            <center>
+                                                                                                <?php
+                                                                                                $cantidad = $carrito_dato['cantidad'];
+                                                                                                $precio = $carrito_dato['precio'];
+                                                                                                echo $subtotal = $cantidad * $precio;
+                                                                                                $total = $total + $subtotal;
+                                                                                                ?>
+                                                                                            </center>
+                                                                                        </td>
+                                                                                    </tr>
+                                                                                    <?php
+                                                                                }
+                                                                                ?>
+                                                                                <tr>
+                                                                                    <th colspan="4"></th>
+                                                                                    <th style="background-color:#98FB98; text-align: right">TOTAL</th>
+                                                                                    <th style="background-color:#98FB98;">
+                                                                                        <center><?php echo $total; ?></center>
+                                                                                    </th>
+                                                                                </tr>
+                                                                                </tbody>
+                                                                            </table>
                                                                         </div>
                                                                     </div>
-                                                                    <div class="modal-footer justify-content-between">
-                                                                        <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
-                                                                        <button type="button" class="btn btn-success" id="btn-update<?php echo $id_categoria;?>">Actualizar Categoria</button>
+                                                                    <div class="modal-footer">
+                                                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Salir</button>
                                                                     </div>
                                                                 </div>
-                                                                <!-- /.modal-content -->
                                                             </div>
-                                                            <!-- /.modal-dialog -->
                                                         </div>
-                                                        <!-- /.modal -->
+                                                    </center>
+                                                </td>
+                                                <td><center><?php echo $ventas_dato['nombre_cliente']; ?></center></td>
+                                                <td><center><?php echo "$ " . $ventas_dato['total_pagado']; ?></center></td>
+                                                <td>
+                                                    <center>
+                                                        <a href="show.php?id_venta=<?php echo $id_venta; ?>" class="btn btn-warning btn-sm">Detalle</a>
+                                                        <a href="delete.php?id_venta=<?php echo $id_venta; ?>&nro_venta=<?php echo $nro_venta; ?>" class="btn btn-danger btn-sm">Eliminar</a>
+                                                        <a href="factura.php?id_venta=<?php echo $id_venta; ?>&nro_venta=<?php echo $nro_venta; ?>" class="btn btn-secondary btn-sm">Factura</a>
+                                                        <a href="factura2.php?id_venta=<?php echo $id_venta; ?>&nro_venta=<?php echo $nro_venta; ?>" class="btn btn-secondary btn-sm">Ticket</a>
+                                                    </center>
+                                                </td>
 
-                                                        <script>
-                                                            $('#btn-update<?php echo $id_categoria;?>').click(function(){
-                                                                //alert("guardar")
-                                                                var nombre_categoria = $('#nombre_categoria<?php echo $id_categoria;?>').val()
-                                                                var id_categoria = '<?php echo $id_categoria;?>'
+                                            </tr>
 
-                                                                if(nombre_categoria == ""){
-                                                                    $('#nombre_categoria<?php echo $id_categoria;?>').focus();
-                                                                    $('#lbl_update<?php echo $id_categoria;?>').css('display','block');
-                                                                }else {
-                                                                    var url = '../app/controllers/categorias/update_categoria.php';
-                                                                    $.get(url,{nombre_categoria:nombre_categoria,id_categoria:id_categoria},function (datos){
-                                                                        $('#respuesta_update<?php echo $id_categoria;?>').html(datos);
-                                                                    })
-                                                                }
-                                                            });
-                                                        </script>
-                                                        <div id="respuesta_update<?php echo $id_categoria;?>"></div>
-                                                    </div>
-                                                </center></td>
-                                        </tr>
-                                        <?php
-                                    }
-                                    ?>
-                                    </tbody>
-                                    <!-- <tfoot>
-                                    <tr>
-                                        <th><center>Nro</center></th>
-                                        <th><center>Nombres</center></th>
-                                        <th><center>Telefono</center></th>
-                                        <th><center>Cedula</center></th>
-                                        <th><center>Email</center></th>
-                                        <th><center>Fecha de Creacion</center></th>
-                                    </tr>
-                                    </tfoot>-->
-                                </table>
+                                            <?php
+                                        }
+                                        ?>
+                                        </tbody>
+                                        </tfoot>
+                                    </table>
+                                </div>
                             </div>
+
                         </div>
                     </div>
                 </div>
-            </div>
-        </div><!-- /.container-fluid -->
+
+                <!-- /.row -->
+            </div><!-- /.container-fluid -->
+        </div>
+        <!-- /.content -->
     </div>
-    <!-- /.content -->
-</div>
-<!-- /.content-wrapper -->
+    <!-- /.content-wrapper -->
 
 <!-- Main Footer -->
 <footer class="main-footer">
@@ -451,7 +490,8 @@ scratch. This page gets rid of all links and provides the needed markup only.
 
 <!-- REQUIRED SCRIPTS -->
 
-
+<!-- jQuery -->
+<script src="<?php echo $URL?>/public/templeates/AdminLTE-3.2.0/plugins/jquery/jquery.min.js"></script>
 <!-- Bootstrap 4 -->
 <script src="<?php echo $URL?>/public/templeates/AdminLTE-3.2.0/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
 <!-- AdminLTE App -->
@@ -487,18 +527,17 @@ if (isset($_SESSION['mensaje'])){
 ?>
 
 <script>
-    $(function () {
+    $(function() {
         $("#example1").DataTable({
             "pageLength": 5,
-            language: {
+            "language": {
                 "emptyTable": "No hay información",
-                "decimal": "",
-                "info": "Mostrando De 1 a 5 categorias",
-                "infoEmpty": "Mostrando 0 to 0 of 0 categorias",
-                "infoFiltered": "(Filtrado de MAX total categorias)",
+                "info": "Mostrando _START_ a _END_ de _TOTAL_ ventas",
+                "infoEmpty": "Mostrando 0 a 0 de 0 ventas",
+                "infoFiltered": "(Filtrado de _MAX_ total ventas)",
                 "infoPostFix": "",
                 "thousands": ",",
-                "lengthMenu": "Mostrar MENU roles",
+                "lengthMenu": "Mostrar _MENU_ ventas",
                 "loadingRecords": "Cargando...",
                 "processing": "Procesando...",
                 "search": "Buscador:",
@@ -510,84 +549,34 @@ if (isset($_SESSION['mensaje'])){
                     "previous": "Anterior"
                 }
             },
-            "responsive": true, "lengthChange": false, "autoWidth": false,
+            "responsive": true,
+            "lengthChange": true,
+            "autoWidth": false,
             buttons: [{
                 extend: 'collection',
                 text: 'Reportes',
                 orientation: 'landscape',
                 buttons: [{
                     text: 'Copiar',
-                    extend: 'copy'
+                    extend: 'copy',
                 }, {
-                    extend: 'pdf',
+                    extend: 'pdf'
                 }, {
-                    extend: 'csv',
-                }, {
-                    extend: 'excel',
+                    extend: 'excel'
                 }, {
                     text: 'Imprimir',
                     extend: 'print'
-                }
-                ]
+                }, {
+                    extend: 'csv'
+                }]
             },
                 {
                     extend: 'colvis',
-                    text: 'Visol de columnas'
+                    text: 'Visor de columnas',
+                    collectionLayout: 'fixed three-column'
                 }
             ],
         }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
-    });
-</script>
-
-<!-- /.modal Creacion de una nueva categoria -->
-<div class="modal fade" id="modal-create">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header" style="background-color: #0c5460; color: white" >
-                <h4 class="modal-title">Crear Nueva Categoria</h4>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <div class="row">
-                    <div class="col-md-12">
-                        <div>
-                            <label for="a">Nombre de la categoria</label>
-                            <input type="text" class="form-control" id="nombre_categoria">
-                            <small style="color: darkred;display: none" id="lbl_create">* Este campo no debe estar vacio</small>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="modal-footer justify-content-between">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
-                <button type="button" class="btn btn-primary" id="btn-create">Guardar Categoria</button>
-                <div id="respuesta"></div>
-            </div>
-        </div>
-        <!-- /.modal-content -->
-    </div>
-    <!-- /.modal-dialog -->
-</div>
-<!-- /.modal -->
-
-
-
-<script>
-    $('#btn-create').click(function(){
-        //alert("guardar")
-        var nombre_categoria = $('#nombre_categoria').val()
-
-        if(nombre_categoria == ""){
-            $('#nombre_categoria').focus();
-            $('#lbl_create').css('display','block');
-        }else{
-            var url = '../app/controllers/categorias/registro_de_categoria.php';
-            $.get(url,{nombre_categoria:nombre_categoria},function (datos){
-                $('#respuesta').html(datos);
-            })
-        }
     });
 </script>
 

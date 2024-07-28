@@ -1,15 +1,10 @@
 <?php
-include ('app/config.php');
-include ('app/controllers/usuarios/listado_de_usurios.php');
-include ('app/controllers/roles/lista_de_roles.php');
-include ('app/controllers/categorias/listado_de_categorias.php');
-include ('app/controllers/almacen/lista_de_productos.php');
-include ('app/controllers/proveedores/listado_de_proveedores.php');
-include ('app/controllers/compras/listado_de_compras.php');
+$id_venta_get = $_GET['id_venta'];
+include ('../app/config.php');
+include('../app/controllers/ventas/cargar_venta.php');
+include('../app/controllers/clientes/cargar_cliente.php');
 global$pdo;
 $URL = "http://localhost/www.sistemadeventas.com";
-
-global $usuarios_datos;
 session_start();
 if(isset($_SESSION['sesion_email'])){
     // echo "si existe sesion de ".$_SESSION['sesion_email'];
@@ -30,6 +25,7 @@ if(isset($_SESSION['sesion_email'])){
 }
 ?>
 <!DOCTYPE html>
+
 <!--
 This is a starter template page. Use this page to start your new project from
 scratch. This page gets rid of all links and provides the needed markup only.
@@ -50,6 +46,9 @@ scratch. This page gets rid of all links and provides the needed markup only.
     <!-- libreria SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
+    <!-- jQuery -->
+    <script src="<?php echo $URL?>/public/templeates/AdminLTE-3.2.0/plugins/jquery/jquery.min.js"></script>
+
 </head>
 <body class="hold-transition sidebar-mini">
 
@@ -63,7 +62,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                 <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
             </li>
             <li class="nav-item d-none d-sm-inline-block">
-                <a href="<?php echo $URL;?>" class="nav-link">SISTEMA DE VENTAS</a>
+                <a href="#" class="nav-link">SISTEMA DE VENTAS</a>
             </li>
         </ul>
 
@@ -98,8 +97,6 @@ scratch. This page gets rid of all links and provides the needed markup only.
                 </div>
             </div>
 
-
-
             <!-- Sidebar Menu -->
             <nav class="mt-2">
                 <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
@@ -130,7 +127,6 @@ scratch. This page gets rid of all links and provides the needed markup only.
                     </li>
 
 
-
                     <li class="nav-item">
                         <a href="#" class="nav-link" style="background-color:#0275d7">
                             <i class="nav-icon fas fa-address-book" ></i>
@@ -154,7 +150,6 @@ scratch. This page gets rid of all links and provides the needed markup only.
                             </li>
                         </ul>
                     </li>
-
 
                     <li class="nav-item">
                         <a href="#" class="nav-link" style="background-color:#0275d7">
@@ -263,7 +258,6 @@ scratch. This page gets rid of all links and provides the needed markup only.
                             </li>
                         </ul>
                     </li>
-
                     <li class="nav-item">
                         <a href="#" class="nav-link" style="background-color:#0275d7">
                             <i class="nav-icon fas fa-user" ></i>
@@ -281,7 +275,6 @@ scratch. This page gets rid of all links and provides the needed markup only.
                             </li>
                         </ul>
                     </li>
-
 
 
                     <li class="nav-item">
@@ -302,8 +295,6 @@ scratch. This page gets rid of all links and provides the needed markup only.
 
 
 
-
-
     <!-- Content Wrapper. Contains page content -->
     <div class="content-wrapper">
         <!-- Content Header (Page header) -->
@@ -311,7 +302,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
             <div class="container-fluid">
                 <div class="row mb-2">
                     <div class="col-sm-12">
-                        <h1 class="m-0">BIENVENIDO AL SITEMA DE VENTAS ------- <?php echo $rol_sesion?></h1>
+                        <h1 class="m-0">Detalle de la Venta Nro <?= $nro_venta; ?></h1>
                     </div><!-- /.col -->
                 </div><!-- /.row -->
             </div><!-- /.container-fluid -->
@@ -322,179 +313,199 @@ scratch. This page gets rid of all links and provides the needed markup only.
         <div class="content">
             <div class="container-fluid">
 
-                Contenido del Sistema
-                <br><br>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="card card-outline card-primary">
+                            <div class="card-body">
+
+                                <div class="table-responsive">
+                                    <table class="table table-bordered table-sm table-hover table-striped">
+                                        <thead>
+                                        <tr>
+                                            <th style="background-color: #e7e7e7; text-align: center">Nro</th>
+                                            <th style="background-color: #e7e7e7; text-align: center">Producto</th>
+                                            <th style="background-color: #e7e7e7; text-align: center">Descripción</th>
+                                            <th style="background-color: #e7e7e7; text-align: center">Cantidad</th>
+                                            <th style="background-color: #e7e7e7; text-align: center">Precio Unitario</th>
+                                            <th style="background-color: #e7e7e7; text-align: center">Precio Subtotal</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <?php
+                                        $contador_de_carrito = 0;
+                                        $total = 0;
+
+                                        $sql_carrito = "SELECT *, pro.nombre as nombre, pro.descripcion as descripcion, pro.precio_venta as precio, pro.stock as stock, pro.id_producto as id_producto FROM tb_carrito as carr 
+                                                        INNER JOIN tb_almacen as pro on carr.id_producto = pro.id_producto WHERE nro_venta = '$nro_venta' ORDER BY id_carrito ASC";
+                                        $query_carrito = $pdo->prepare($sql_carrito);
+                                        $query_carrito->execute();
+                                        $carrito_datos = $query_carrito->fetchAll(PDO::FETCH_ASSOC);
+                                        foreach ($carrito_datos as $carrito_dato) {
+                                            $contador_de_carrito = $contador_de_carrito + 1;
+                                            $id_carrito = $carrito_dato['id_carrito'];
+                                            ?>
+                                            <tr>
+                                                <td>
+                                                    <center><?php echo $contador_de_carrito; ?></center>
+                                                    <input type="text" value="<?php echo $carrito_dato['id_producto']; ?>" id="id_producto<?php echo $contador_de_carrito; ?>" hidden>
+                                                </td>
+                                                <td><center><?php echo $carrito_dato['nombre']; ?></center></td>
+                                                <td><center><?php echo $carrito_dato['descripcion']; ?></center></td>
+                                                <td>
+                                                    <center><span id="cantidad_carrito<?php echo $contador_de_carrito; ?>"><?php echo $carrito_dato['cantidad']; ?></span></center>
+                                                    <input type="text" value="<?php echo $carrito_dato['stock'];?>" id="stock_de_inventario<?php echo $contador_de_carrito; ?>" hidden>
+                                                </td>
+                                                <td><center><?php echo $carrito_dato['precio']; ?></center></td>
+                                                <td><center>
+                                                        <?php
+                                                        $cantidad = $carrito_dato['cantidad'];
+                                                        $precio = $carrito_dato['precio'];
+                                                        echo $subtotal = $cantidad * $precio;
+                                                        $total = $total + $subtotal;
+                                                        ?>
+                                                    </center></td>
+                                            </tr>
+                                            <?php
+                                        }
+                                        ?>
+                                        <tr>
+                                            <th colspan="4"></th>
+                                            <th style="background-color:#98FB98; text-align: right">TOTAL</th>
+                                            <th style="background-color:#98FB98;">
+                                                <center><?php echo $total; ?></center>
+                                            </th>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
 
                 <div class="row">
-                    <div class="col-lg-3 col-6">
-                        <div class="small-box bg-info">
-                            <div class="inner">
-                                <?php
-                                $contador_de_usuarios = 0;
-                                    foreach ($usuarios_datos as $usuarios_dato){
-                                        $contador_de_usuarios = $contador_de_usuarios + 1;
-                                    }
-                                ?>
-                                <h3><?php echo $contador_de_usuarios?></h3>
-                                <p>Usuarios Registrados</p>
-                            </div>
-                            <a href="<?php echo $URL?>/usuarios/create.php">
-                                <div class="icon">
-                                    <i class="fas fa-user-plus"></i>
-                                </div></a>
-                            <a href="<?php echo $URL?>/usuarios" class="small-box-footer">
-                                Mas informacion <i class="fas fa-arrow-circle-right"></i>
-                            </a>
-                        </div>
-                    </div>
-
-                    <div class="col-lg-3 col-6">
-                        <div class="small-box bg-gradient-maroon">
-                            <div class="inner">
-                                <?php
-                                $contador_de_roles = 0;
-                                foreach ($roles_datos as $roles_dato){
-                                    $contador_de_roles = $contador_de_roles + 1;
-                                }
-                                ?>
-                                <h3><?php echo $contador_de_roles?></h3>
-                                <p>Roles Registrados</p>
-                            </div>
-                            <a href="<?php echo $URL?>/roles/create.php">
-                                <div class="icon">
-                                    <i class="fas fa-user-plus"></i>
-                                </div></a>
-                            <a href="<?php echo $URL?>/roles" class="small-box-footer">
-                                Mas informacion <i class="fas fa-arrow-circle-right"></i>
-                            </a>
-                        </div>
-                    </div>
-
-                    <div class="col-lg-3 col-6">
-                        <div class="small-box bg-olive">
-                            <div class="inner">
-                                <?php
-                                $contador_de_categorias = 0;
-                                foreach ($categorias_datos as $categorias_dato){
-                                    $contador_de_categorias = $contador_de_categorias + 1;
-                                }
-                                ?>
-                                <h3><?php echo $contador_de_categorias;?></h3>
-                                <p>Categorías Registrados</p>
-                            </div>
-                            <a href="<?php echo $URL;?>/categorias">
-                                <div class="icon">
-                                    <i class="fas fa-tags"></i>
+                    <div class="col-md-12">
+                        <div class="card card-outline card-primary">
+                            <div class="card-header">
+                                <h3 class="card-title"><i class="fas fa-user-check"></i> Datos del Cliente</h3>
+                                <div class="card-tools">
+                                    <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                                        <i class="fas fa-minus"></i>
+                                    </button>
                                 </div>
-                            </a>
-                            <a href="<?php echo $URL;?>/categorias" class="small-box-footer">
-                                Más detalle <i class="fas fa-arrow-circle-right"></i>
-                            </a>
-                        </div>
-                    </div>
-
-
-                    <div class="col-lg-3 col-6">
-                        <div class="small-box bg-gradient-blue">
-                            <div class="inner">
-                                <?php
-                                $contador_de_productos = 0;
-                                foreach ($productos_datos as $productos_dato){
-                                    $contador_de_productos = $contador_de_productos + 1;
-                                }
-                                ?>
-                                <h3><?php echo $contador_de_productos;?></h3>
-                                <p>Productos Registrados</p>
                             </div>
-                            <a href="<?php echo $URL;?>/almacen/create.php">
-                                <div class="icon">
-                                    <i class="fas fa-list"></i>
+
+                            <?php
+                            foreach ($clientes_datos as $clientes_dato)
+                            {
+                                $nombre_cliente = $clientes_dato['nombre_cliente'];
+                                $dni_cliente = $clientes_dato['dni_cliente'];
+                                $telefono_cliente = $clientes_dato['telefono_cliente'];
+                                $mail_cliente = $clientes_dato['mail_cliente'];
+                                $direccion_cliente = $clientes_dato['direccion_cliente'];
+                            }
+                            ?>
+
+                            <div class="card-body">
+                                <!-- Modal para ver datos de los cliente -->
+                                <div class="row">
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <input type="text" id="id_cliente" hidden>
+                                            <label for="">Nombre Cliente</label>
+                                            <input type="text" value="<?php echo $nombre_cliente; ?>" class="form-control" id="nombre_cliente" disabled>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <div class="form-group">
+                                            <label for="">Dni</label>
+                                            <input type="text" value="<?php echo $dni_cliente; ?>" class="form-control" id="dni_cliente" disabled>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <div class="form-group">
+                                            <label for="">Teléfono</label>
+                                            <input type="text" value="<?php echo $telefono_cliente; ?>" class="form-control" id="telefono_cliente" disabled>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <div class="form-group">
+                                            <label for="">Mail</label>
+                                            <input type="text" value="<?php echo $mail_cliente; ?>" class="form-control" id="mail_cliente" disabled>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label for="">Dirección</label>
+                                            <input type="text" value="<?php echo $direccion_cliente; ?>" class="form-control" id="direccion_cliente" disabled>
+                                        </div>
+                                    </div>
                                 </div>
-                            </a>
-                            <a href="<?php echo $URL;?>/almacen" class="small-box-footer">
-                                Más detalle <i class="fas fa-arrow-circle-right"></i>
-                            </a>
-                        </div>
-                    </div>
-
-
-                    <div class="col-lg-3 col-6">
-                        <div class="small-box bg-gradient-gray-dark">
-                            <div class="inner">
-                                <?php
-                                $contador_de_compras = 0;
-                                foreach ($compras_datos as $compras_dato){
-                                    $contador_de_compras = $contador_de_compras + 1;
-                                }
-                                ?>
-                                <h3><?php echo $contador_de_compras;?></h3>
-                                <p>Compras Registradas</p>
                             </div>
-                            <a href="<?php echo $URL;?>/compras/create.php">
-                                <div class="icon">
-                                    <i class="fas fa-cart-plus"></i>
-                                </div>
-                            </a>
-                            <a href="<?php echo $URL;?>/compras" class="small-box-footer">
-                                Más detalle <i class="fas fa-arrow-circle-right"></i>
-                            </a>
                         </div>
                     </div>
-
-                    <div class="col-lg-3 col-6">
-                        <div class="small-box bg-gradient-pink">
-                            <div class="inner">
-                                <?php
-                                $contador_de_proveedores = 0;
-                                foreach ($proveedores_datos as $proveedores_dato){
-                                    $contador_de_proveedores = $contador_de_proveedores + 1;
-                                }
-                                ?>
-                                <h3><?php echo $contador_de_proveedores;?></h3>
-                                <p>proveedores Registrados</p>
-                            </div>
-                            <a href="<?php echo $URL;?>/proveedores">
-                                <div class="icon">
-                                    <i class="fas fa-car"></i>
-                                </div>
-                            </a>
-                            <a href="<?php echo $URL;?>/proveedores" class="small-box-footer">
-                                Más detalle <i class="fas fa-arrow-circle-right"></i>
-                            </a>
-                        </div>
-                    </div>
-
-
-
                 </div>
+                <!-- /.row -->
             </div><!-- /.container-fluid -->
         </div>
         <!-- /.content -->
-
-
-
     </div>
-        <!-- /.content-wrapper -->
+    <!-- /.content-wrapper -->
 
-        <!-- Main Footer -->
-        <footer class="main-footer">
-            <!-- To the right -->
-            <div class="float-right d-none d-sm-inline">
 
-            </div>
-            <!-- Default to the left -->
-            <strong>Copyright &copy; 2024 <a href="https://adminlte.io"></a>.</strong> Reservados todos los derechos.
-        </footer>
-    </div>
+
+
+
+    <!-- Main Footer -->
+    <footer class="main-footer">
+        <!-- To the right -->
+        <div class="float-right d-none d-sm-inline">
+
+        </div>
+        <!-- Default to the left -->
+        <strong>Copyright &copy; 2024 <a href="https://adminlte.io"></a>.</strong> Reservados todos los derechos.
+    </footer>
+</div>
 <!-- ./wrapper -->
 
 <!-- REQUIRED SCRIPTS -->
 
-<!-- jQuery -->
-<script src="<?php echo $URL?>/public/templeates/AdminLTE-3.2.0/plugins/jquery/jquery.min.js"></script>
+
 <!-- Bootstrap 4 -->
 <script src="<?php echo $URL?>/public/templeates/AdminLTE-3.2.0/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
 <!-- AdminLTE App -->
 <script src="<?php echo $URL?>/public/templeates/AdminLTE-3.2.0/dist/js/adminlte.min.js"></script>
+
+<!-- DataTables  & Plugins -->
+<script src="<?php echo $URL;?>/public/templeates/AdminLTE-3.2.0/plugins/datatables/jquery.dataTables.min.js"></script>
+<script src="<?php echo $URL;?>/public/templeates/AdminLTE-3.2.0/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
+<script src="<?php echo $URL;?>/public/templeates/AdminLTE-3.2.0/plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
+<script src="<?php echo $URL;?>/public/templeates/AdminLTE-3.2.0/plugins/datatables-responsive/js/responsive.bootstrap4.min.js"></script>
+<script src="<?php echo $URL;?>/public/templeates/AdminLTE-3.2.0/plugins/datatables-buttons/js/dataTables.buttons.min.js"></script>
+<script src="<?php echo $URL;?>/public/templeates/AdminLTE-3.2.0/plugins/datatables-buttons/js/buttons.bootstrap4.min.js"></script>
+<script src="<?php echo $URL;?>/public/templeates/AdminLTE-3.2.0/plugins/jszip/jszip.min.js"></script>
+<script src="<?php echo $URL;?>/public/templeates/AdminLTE-3.2.0/plugins/pdfmake/pdfmake.min.js"></script>
+<script src="<?php echo $URL;?>/public/templeates/AdminLTE-3.2.0/plugins/pdfmake/vfs_fonts.js"></script>
+<script src="<?php echo $URL;?>/public/templeates/AdminLTE-3.2.0/plugins/datatables-buttons/js/buttons.html5.min.js"></script>
+<script src="<?php echo $URL;?>/public/templeates/AdminLTE-3.2.0/plugins/datatables-buttons/js/buttons.print.min.js"></script>
+<script src="<?php echo $URL;?>/public/templeates/AdminLTE-3.2.0/plugins/datatables-buttons/js/buttons.colVis.min.js"></script>
+
+<?php
+if (isset($_SESSION['mensaje'])){
+    $respuesta = $_SESSION['mensaje'];
+    unset($_SESSION['mensaje']); // Eliminar el mensaje después de mostrarlo
+    ?>
+    <script>
+        Swal.fire({
+            icon: "error",
+            title: "<?php echo $respuesta; ?>",
+            text: "¡Algo salió mal!",
+        })
+    </script>
+    <?php
+}
+?>
 </body>
 </html>
+

@@ -1,15 +1,9 @@
 <?php
-include ('app/config.php');
-include ('app/controllers/usuarios/listado_de_usurios.php');
-include ('app/controllers/roles/lista_de_roles.php');
-include ('app/controllers/categorias/listado_de_categorias.php');
-include ('app/controllers/almacen/lista_de_productos.php');
-include ('app/controllers/proveedores/listado_de_proveedores.php');
-include ('app/controllers/compras/listado_de_compras.php');
+
+include ('../app/config.php');
+include ('../app/controllers/almacen/cargar_producto.php');
 global$pdo;
 $URL = "http://localhost/www.sistemadeventas.com";
-
-global $usuarios_datos;
 session_start();
 if(isset($_SESSION['sesion_email'])){
     // echo "si existe sesion de ".$_SESSION['sesion_email'];
@@ -30,6 +24,7 @@ if(isset($_SESSION['sesion_email'])){
 }
 ?>
 <!DOCTYPE html>
+
 <!--
 This is a starter template page. Use this page to start your new project from
 scratch. This page gets rid of all links and provides the needed markup only.
@@ -63,7 +58,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                 <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
             </li>
             <li class="nav-item d-none d-sm-inline-block">
-                <a href="<?php echo $URL;?>" class="nav-link">SISTEMA DE VENTAS</a>
+                <a href="#" class="nav-link">SISTEMA DE VENTAS</a>
             </li>
         </ul>
 
@@ -97,8 +92,6 @@ scratch. This page gets rid of all links and provides the needed markup only.
                     <a href="#" class="d-block"><?php echo $nombres_sesion?></a>
                 </div>
             </div>
-
-
 
             <!-- Sidebar Menu -->
             <nav class="mt-2">
@@ -154,7 +147,6 @@ scratch. This page gets rid of all links and provides the needed markup only.
                             </li>
                         </ul>
                     </li>
-
 
                     <li class="nav-item">
                         <a href="#" class="nav-link" style="background-color:#0275d7">
@@ -282,8 +274,6 @@ scratch. This page gets rid of all links and provides the needed markup only.
                         </ul>
                     </li>
 
-
-
                     <li class="nav-item">
                         <a href="<?php echo $URL;?>/app/controllers/login/cerrar_sesion.php" class="nav-link" style="background-color: #8B4545">
                             <i class="nav-icon fas fa-door-closed"></i>
@@ -302,8 +292,6 @@ scratch. This page gets rid of all links and provides the needed markup only.
 
 
 
-
-
     <!-- Content Wrapper. Contains page content -->
     <div class="content-wrapper">
         <!-- Content Header (Page header) -->
@@ -311,181 +299,163 @@ scratch. This page gets rid of all links and provides the needed markup only.
             <div class="container-fluid">
                 <div class="row mb-2">
                     <div class="col-sm-12">
-                        <h1 class="m-0">BIENVENIDO AL SITEMA DE VENTAS ------- <?php echo $rol_sesion?></h1>
+                        <h1 class="m-0">Datos del producto: <?php echo $nombre;?> a ser eliminado</h1>
                     </div><!-- /.col -->
                 </div><!-- /.row -->
             </div><!-- /.container-fluid -->
         </div>
         <!-- /.content-header -->
 
+
         <!-- Main content -->
+
         <div class="content">
             <div class="container-fluid">
-
-                Contenido del Sistema
-                <br><br>
-
                 <div class="row">
-                    <div class="col-lg-3 col-6">
-                        <div class="small-box bg-info">
-                            <div class="inner">
-                                <?php
-                                $contador_de_usuarios = 0;
-                                    foreach ($usuarios_datos as $usuarios_dato){
-                                        $contador_de_usuarios = $contador_de_usuarios + 1;
-                                    }
-                                ?>
-                                <h3><?php echo $contador_de_usuarios?></h3>
-                                <p>Usuarios Registrados</p>
-                            </div>
-                            <a href="<?php echo $URL?>/usuarios/create.php">
-                                <div class="icon">
-                                    <i class="fas fa-user-plus"></i>
-                                </div></a>
-                            <a href="<?php echo $URL?>/usuarios" class="small-box-footer">
-                                Mas informacion <i class="fas fa-arrow-circle-right"></i>
-                            </a>
-                        </div>
-                    </div>
-
-                    <div class="col-lg-3 col-6">
-                        <div class="small-box bg-gradient-maroon">
-                            <div class="inner">
-                                <?php
-                                $contador_de_roles = 0;
-                                foreach ($roles_datos as $roles_dato){
-                                    $contador_de_roles = $contador_de_roles + 1;
-                                }
-                                ?>
-                                <h3><?php echo $contador_de_roles?></h3>
-                                <p>Roles Registrados</p>
-                            </div>
-                            <a href="<?php echo $URL?>/roles/create.php">
-                                <div class="icon">
-                                    <i class="fas fa-user-plus"></i>
-                                </div></a>
-                            <a href="<?php echo $URL?>/roles" class="small-box-footer">
-                                Mas informacion <i class="fas fa-arrow-circle-right"></i>
-                            </a>
-                        </div>
-                    </div>
-
-                    <div class="col-lg-3 col-6">
-                        <div class="small-box bg-olive">
-                            <div class="inner">
-                                <?php
-                                $contador_de_categorias = 0;
-                                foreach ($categorias_datos as $categorias_dato){
-                                    $contador_de_categorias = $contador_de_categorias + 1;
-                                }
-                                ?>
-                                <h3><?php echo $contador_de_categorias;?></h3>
-                                <p>Categorías Registrados</p>
-                            </div>
-                            <a href="<?php echo $URL;?>/categorias">
-                                <div class="icon">
-                                    <i class="fas fa-tags"></i>
+                    <div class="col-md-12">
+                        <div class="card card-success">
+                            <div class="card-header">
+                                <h3 class="card-title">datos del producto a eliminar</h3>
+                                <div class="card-tools">
+                                    <button type="button" class="btn btn-tool" data-card-widget="collapse"><i class="fas fa-minus"></i>
+                                    </button>
                                 </div>
-                            </a>
-                            <a href="<?php echo $URL;?>/categorias" class="small-box-footer">
-                                Más detalle <i class="fas fa-arrow-circle-right"></i>
-                            </a>
-                        </div>
-                    </div>
-
-
-                    <div class="col-lg-3 col-6">
-                        <div class="small-box bg-gradient-blue">
-                            <div class="inner">
-                                <?php
-                                $contador_de_productos = 0;
-                                foreach ($productos_datos as $productos_dato){
-                                    $contador_de_productos = $contador_de_productos + 1;
-                                }
-                                ?>
-                                <h3><?php echo $contador_de_productos;?></h3>
-                                <p>Productos Registrados</p>
                             </div>
-                            <a href="<?php echo $URL;?>/almacen/create.php">
-                                <div class="icon">
-                                    <i class="fas fa-list"></i>
+
+
+                            <div class="card-body" style="display: block;">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <form action="../app/controllers/almacen/delete.php" method="post">
+                                            <input type="text" name="id_producto" value="<?php echo $id_producto_get;?>" hidden>
+                                            <div class="row">
+                                                <div class="col-md-9">
+                                                    <div class="row">
+                                                        <div class="col-md-4">
+                                                            <div class="form-group">
+                                                                <label for="">Código:</label>
+                                                                <input type="text" class="form-control"
+                                                                       value="<?php echo $codigo; ?>" disabled>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                            <div class="form-group">
+                                                                <label for="">Categoría:</label>
+                                                                <div style="display: flex">
+                                                                    <input type="text" class="form-control" value="<?php echo $nombre_categoria; ?>" disabled>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                            <div class="form-group">
+                                                                <label for="">Nombre del producto:</label>
+                                                                <input type="text" name="nombre" value="<?php echo $nombre;?>" class="form-control" disabled>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="row">
+                                                        <div class="col-md-4">
+                                                            <div class="form-group">
+                                                                <label for="">Usuario</label>
+                                                                <input type="text" class="form-control" value="<?php echo $email; ?>" disabled>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-8">
+                                                            <div class="form-group">
+                                                                <label for="">Descripción del producto:</label>
+                                                                <textarea name="descripcion" id="" cols="30" rows="2" class="form-control" disabled><?php echo $descripcion;?></textarea>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+
+                                                    <div class="row">
+                                                        <div class="col-md-2">
+                                                            <div class="form-group">
+                                                                <label for="">Stock:</label>
+                                                                <input type="number" name="stock" value="<?php echo $stock;?>" class="form-control" disabled>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-2">
+                                                            <div class="form-group">
+                                                                <label for="">Stock mínimo:</label>
+                                                                <input type="number" name="stock_minimo" value="<?php echo $stock_minimo;?>" class="form-control" disabled>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-2">
+                                                            <div class="form-group">
+                                                                <label for="">Stock máximo:</label>
+                                                                <input type="number" name="stock_maximo" value="<?php echo $stock_maximo;?>" class="form-control" disabled>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-2">
+                                                            <div class="form-group">
+                                                                <label for="">Precio compra:</label>
+                                                                <input type="number" name="precio_compra" value="<?php echo $precio_compra;?>" class="form-control" disabled>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-2">
+                                                            <div class="form-group">
+                                                                <label for="">Precio venta:</label>
+                                                                <input type="number" name="precio_venta" value="<?php echo $precio_venta;?>" class="form-control" disabled>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-2">
+                                                            <div class="form-group">
+                                                                <label for="">Fecha de ingreso:</label>
+                                                                <input type="date" name="fecha_ingreso" value="<?php echo $fecha_ingreso;?>" class="form-control" disabled>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <div class="form-group">
+                                                        <label for="">Imagen del producto</label>
+                                                        <center>
+                                                            <img src="<?php echo $URL."/almacen/img-productos/".$imagen;?>" width="100%" alt="">
+                                                        </center>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+
+
+
+
+                                            <hr>
+                                            <div class="form-group">
+                                                <a href="index.php" class="btn btn-secondary">Cancelar</a>
+                                                <button class="btn btn-danger"><i class="fa fa-trash"></i> Borrar producto</button>
+                                            </div>
+                                        </form>
+                                    </div>
                                 </div>
-                            </a>
-                            <a href="<?php echo $URL;?>/almacen" class="small-box-footer">
-                                Más detalle <i class="fas fa-arrow-circle-right"></i>
-                            </a>
-                        </div>
-                    </div>
-
-
-                    <div class="col-lg-3 col-6">
-                        <div class="small-box bg-gradient-gray-dark">
-                            <div class="inner">
-                                <?php
-                                $contador_de_compras = 0;
-                                foreach ($compras_datos as $compras_dato){
-                                    $contador_de_compras = $contador_de_compras + 1;
-                                }
-                                ?>
-                                <h3><?php echo $contador_de_compras;?></h3>
-                                <p>Compras Registradas</p>
                             </div>
-                            <a href="<?php echo $URL;?>/compras/create.php">
-                                <div class="icon">
-                                    <i class="fas fa-cart-plus"></i>
-                                </div>
-                            </a>
-                            <a href="<?php echo $URL;?>/compras" class="small-box-footer">
-                                Más detalle <i class="fas fa-arrow-circle-right"></i>
-                            </a>
                         </div>
                     </div>
-
-                    <div class="col-lg-3 col-6">
-                        <div class="small-box bg-gradient-pink">
-                            <div class="inner">
-                                <?php
-                                $contador_de_proveedores = 0;
-                                foreach ($proveedores_datos as $proveedores_dato){
-                                    $contador_de_proveedores = $contador_de_proveedores + 1;
-                                }
-                                ?>
-                                <h3><?php echo $contador_de_proveedores;?></h3>
-                                <p>proveedores Registrados</p>
-                            </div>
-                            <a href="<?php echo $URL;?>/proveedores">
-                                <div class="icon">
-                                    <i class="fas fa-car"></i>
-                                </div>
-                            </a>
-                            <a href="<?php echo $URL;?>/proveedores" class="small-box-footer">
-                                Más detalle <i class="fas fa-arrow-circle-right"></i>
-                            </a>
-                        </div>
-                    </div>
-
-
-
                 </div>
             </div><!-- /.container-fluid -->
         </div>
         <!-- /.content -->
-
-
-
     </div>
-        <!-- /.content-wrapper -->
+    <!-- /.content-wrapper -->
 
-        <!-- Main Footer -->
-        <footer class="main-footer">
-            <!-- To the right -->
-            <div class="float-right d-none d-sm-inline">
 
-            </div>
-            <!-- Default to the left -->
-            <strong>Copyright &copy; 2024 <a href="https://adminlte.io"></a>.</strong> Reservados todos los derechos.
-        </footer>
-    </div>
+
+
+    <!-- Main Footer -->
+    <footer class="main-footer">
+        <!-- To the right -->
+        <div class="float-right d-none d-sm-inline">
+
+        </div>
+        <!-- Default to the left -->
+        <strong>Copyright &copy; 2024 <a href="https://adminlte.io"></a>.</strong> Reservados todos los derechos.
+    </footer>
+</div>
 <!-- ./wrapper -->
 
 <!-- REQUIRED SCRIPTS -->
@@ -496,5 +466,21 @@ scratch. This page gets rid of all links and provides the needed markup only.
 <script src="<?php echo $URL?>/public/templeates/AdminLTE-3.2.0/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
 <!-- AdminLTE App -->
 <script src="<?php echo $URL?>/public/templeates/AdminLTE-3.2.0/dist/js/adminlte.min.js"></script>
+
+<?php
+if (isset($_SESSION['mensaje'])){
+    $respuesta = $_SESSION['mensaje'];
+    unset($_SESSION['mensaje']); // Eliminar el mensaje después de mostrarlo
+    ?>
+    <script>
+        Swal.fire({
+            icon: "error",
+            title: "<?php echo $respuesta; ?>",
+            text: "¡Algo salió mal!",
+        })
+    </script>
+    <?php
+}
+?>
 </body>
 </html>

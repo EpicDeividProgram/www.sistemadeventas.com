@@ -2,19 +2,23 @@
 include ('../app/config.php');
 include ('../app/controllers/usuarios/show_usuario.php');
 global$pdo;
-$URL = "http://localhost/www.sistemadeventas.com";
+
 session_start();
-if (isset($_SESSION['sesion_email'])) {
+if(isset($_SESSION['sesion_email'])){
+    // echo "si existe sesion de ".$_SESSION['sesion_email'];
     $email_sesion = $_SESSION['sesion_email'];
-    $sql = "SELECT * FROM tb_usuarios WHERE email = '$email_sesion'";
+    $sql = "SELECT us.id_usuario as id_usuario, us.nombres as nombres, us.email as email, rol.rol as rol 
+                  FROM tb_usuarios as us INNER JOIN tb_roles as rol ON us.id_rol = rol.id_rol WHERE email='$email_sesion'";
     $query = $pdo->prepare($sql);
     $query->execute();
     $usuarios = $query->fetchAll(PDO::FETCH_ASSOC);
-    foreach ($usuarios as $usuario) {
+    foreach ($usuarios as $usuario){
+        $id_usuario_sesion = $usuario['id_usuario'];
         $nombres_sesion = $usuario['nombres'];
+        $rol_sesion = $usuario['rol'];
     }
-}else {
-    echo "No existe la sesión";
+}else{
+    echo "no existe sesion";
     header('Location: '.$URL.'/login');
 }
 ?>
@@ -186,6 +190,89 @@ scratch. This page gets rid of all links and provides the needed markup only.
                         </ul>
                     </li>
 
+                    <li class="nav-item ">
+                        <a href="#" class="nav-link active">
+                            <i class="nav-icon fas fa-car"></i>
+                            <p>
+                                Proveedores
+                                <i class="right fas fa-angle-left"></i>
+                            </p>
+                        </a>
+                        <ul class="nav nav-treeview">
+                            <li class="nav-item">
+                                <a href="<?php echo $URL;?>/proveedores" class="nav-link">
+                                    <i class="far fa-circle nav-icon fas fa-list"></i>
+                                    <p>Listado de proveedores</p>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+
+                    <li class="nav-item ">
+                        <a href="#" class="nav-link active">
+                            <i class="nav-icon fas fa-cart-plus"></i>
+                            <p>
+                                Compras
+                                <i class="right fas fa-angle-left"></i>
+                            </p>
+                        </a>
+                        <ul class="nav nav-treeview">
+                            <li class="nav-item">
+                                <a href="<?php echo $URL;?>/compras" class="nav-link">
+                                    <i class="far fa-circle nav-icon fas fa-list"></i>
+                                    <p>Listado de compras</p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="<?php echo $URL;?>/compras/create.php" class="nav-link">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>Creación de compra</p>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+
+                    <li class="nav-item ">
+                        <a href="#" class="nav-link active">
+                            <i class="nav-icon fas fa-shopping-bag"></i>
+                            <p>
+                                Ventas
+                                <i class="right fas fa-angle-left"></i>
+                            </p>
+                        </a>
+                        <ul class="nav nav-treeview">
+                            <li class="nav-item">
+                                <a href="<?php echo $URL;?>/ventas" class="nav-link">
+                                    <i class="far fa-circle nav-icon fas fa-list"></i>
+                                    <p>Listado de ventas</p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="<?php echo $URL;?>/ventas/create.php" class="nav-link">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>Creación de ventas</p>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+
+                    <li class="nav-item">
+                        <a href="#" class="nav-link" style="background-color:#0275d7">
+                            <i class="nav-icon fas fa-user" ></i>
+                            <p>
+                                Clientes
+                                <i class="right fas fa-angle-left"></i>
+                            </p>
+                        </a>
+                        <ul class="nav nav-treeview">
+                            <li class="nav-item">
+                                <a href="<?php echo $URL?>/clientes" class="nav-link">
+                                    <i class="far fa-circle nav-icon fas fa-list"></i>
+                                    <p>Listado de clientes</p>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
                     <li class="nav-item">
                         <a href="<?php echo $URL;?>/app/controllers/login/cerrar_sesion.php" class="nav-link" style="background-color: #8B4545">
                             <i class="nav-icon fas fa-door-closed"></i>

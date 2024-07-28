@@ -5,17 +5,21 @@ include ('../app/controllers/almacen/lista_de_productos.php');
 global$pdo;
 $URL = "http://localhost/www.sistemadeventas.com";
 session_start();
-if (isset($_SESSION['sesion_email'])) {
+if(isset($_SESSION['sesion_email'])){
+    // echo "si existe sesion de ".$_SESSION['sesion_email'];
     $email_sesion = $_SESSION['sesion_email'];
-    $sql = "SELECT * FROM tb_usuarios WHERE email='$email_sesion'";
+    $sql = "SELECT us.id_usuario as id_usuario, us.nombres as nombres, us.email as email, rol.rol as rol 
+                  FROM tb_usuarios as us INNER JOIN tb_roles as rol ON us.id_rol = rol.id_rol WHERE email='$email_sesion'";
     $query = $pdo->prepare($sql);
     $query->execute();
     $usuarios = $query->fetchAll(PDO::FETCH_ASSOC);
-    foreach ($usuarios as $usuario) {
+    foreach ($usuarios as $usuario){
+        $id_usuario_sesion = $usuario['id_usuario'];
         $nombres_sesion = $usuario['nombres'];
+        $rol_sesion = $usuario['rol'];
     }
-}else {
-    echo "No existe la sesión";
+}else{
+    echo "no existe sesion";
     header('Location: '.$URL.'/login');
 }
 ?>
@@ -191,6 +195,90 @@ scratch. This page gets rid of all links and provides the needed markup only.
                         </ul>
                     </li>
 
+                    <li class="nav-item ">
+                        <a href="#" class="nav-link active">
+                            <i class="nav-icon fas fa-car"></i>
+                            <p>
+                                Proveedores
+                                <i class="right fas fa-angle-left"></i>
+                            </p>
+                        </a>
+                        <ul class="nav nav-treeview">
+                            <li class="nav-item">
+                                <a href="<?php echo $URL;?>/proveedores" class="nav-link">
+                                    <i class="far fa-circle nav-icon fas fa-list"></i>
+                                    <p>Listado de proveedores</p>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+
+                    <li class="nav-item ">
+                        <a href="#" class="nav-link active">
+                            <i class="nav-icon fas fa-cart-plus"></i>
+                            <p>
+                                Compras
+                                <i class="right fas fa-angle-left"></i>
+                            </p>
+                        </a>
+                        <ul class="nav nav-treeview">
+                            <li class="nav-item">
+                                <a href="<?php echo $URL;?>/compras" class="nav-link">
+                                    <i class="far fa-circle nav-icon fas fa-list"></i>
+                                    <p>Listado de compras</p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="<?php echo $URL;?>/compras/create.php" class="nav-link">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>Creación de compra</p>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+
+                    <li class="nav-item ">
+                        <a href="#" class="nav-link active">
+                            <i class="nav-icon fas fa-shopping-bag"></i>
+                            <p>
+                                Ventas
+                                <i class="right fas fa-angle-left"></i>
+                            </p>
+                        </a>
+                        <ul class="nav nav-treeview">
+                            <li class="nav-item">
+                                <a href="<?php echo $URL;?>/ventas" class="nav-link">
+                                    <i class="far fa-circle nav-icon fas fa-list"></i>
+                                    <p>Listado de ventas</p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="<?php echo $URL;?>/ventas/create.php" class="nav-link">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>Creación de ventas</p>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+
+                    <li class="nav-item">
+                        <a href="#" class="nav-link" style="background-color:#0275d7">
+                            <i class="nav-icon fas fa-user" ></i>
+                            <p>
+                                Clientes
+                                <i class="right fas fa-angle-left"></i>
+                            </p>
+                        </a>
+                        <ul class="nav nav-treeview">
+                            <li class="nav-item">
+                                <a href="<?php echo $URL?>/clientes" class="nav-link">
+                                    <i class="far fa-circle nav-icon fas fa-list"></i>
+                                    <p>Listado de clientes</p>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+
 
                     <li class="nav-item">
                         <a href="<?php echo $URL;?>/app/controllers/login/cerrar_sesion.php" class="nav-link" style="background-color: #8B4545">
@@ -246,8 +334,8 @@ scratch. This page gets rid of all links and provides the needed markup only.
                                         <tr>
                                             <th><center>Nro</center></th>
                                             <th><center>Codigo Producto</center></th>
-                                            <th><center>Categoria</center></th>
                                             <th><center>Nombre</center></th>
+                                            <th><center>Categoria</center></th>
                                             <th><center>imagen</center></th>
                                             <th><center>Descripcion</center></th>
                                             <th><center>Stock</center></th>
@@ -264,25 +352,43 @@ scratch. This page gets rid of all links and provides the needed markup only.
                                         foreach ($productos_datos as $productos_dato){
                                         $id_producto = $productos_dato['id_producto'];?>
                                         <tr>
-                                            <td><?php echo $contados = $contados + 1?></td>
+                                            <td><?php echo $contados = $contados + 1; ?></td>
                                             <td><?php echo $productos_dato['codigo'];?></td>
-                                            <td><?php echo $productos_dato['nombre_categoria'];?></td>
                                             <td><?php echo $productos_dato['nombre'];?></td>
+                                            <td><?php echo $productos_dato['nombre_categoria'];?></td>
                                             <td>
                                                 <img src="<?php echo $URL."/almacen/img-productos/".$productos_dato['imagen'];?>" width="50px" alt="asdf">
                                             </td>
                                             <td><?php echo $productos_dato['descripcion'];?></td>
-                                            <td><?php echo $productos_dato['stock'];?></td>
+                                            <?php
+                                            $stock_actual = $productos_dato['stock'];
+                                            $stock_maximo = $productos_dato['stock_maximo'];
+                                            $stock_minimo = $productos_dato['stock_minimo'];
+                                            if($stock_actual < $stock_minimo){ ?>
+                                                <td style="background-color: #ee868b"><center><?php echo $productos_dato['stock'];?></center></td>
+                                                <?php
+                                            }
+                                            else if($stock_actual > $stock_maximo){ ?>
+                                                <td style="background-color: #8ac68d"><center><?php echo $productos_dato['stock'];?></center></td>
+                                                <?php
+                                            }else{ ?>
+                                                <td><center><?php echo $productos_dato['stock'];?></center></td>
+                                                <?php
+                                            }
+                                            ?>
+
                                             <td><?php echo $productos_dato['precio_compra'];?></td>
                                             <td><?php echo $productos_dato['precio_venta'];?></td>
                                             <td><?php echo $productos_dato['email'];?></td>
                                             <td><?php echo $productos_dato['fecha_ingreso'];?></td>
-                                            <td><center>
+                                            <td>
+                                                <center>
                                                     <div class="btn-group">
                                                         <a href="show.php?id=<?php echo $id_producto; ?>" type="button" class="btn btn-info btn-sm"><i class="fa fa-eye"></i> Ver</a>
                                                         <a href="update.php?id=<?php echo $id_producto; ?>" type="button" class="btn btn-success btn-sm"><i class="fa fa-pencil-alt"></i> Editar</a>
                                                         <a href="delete.php?id=<?php echo $id_producto; ?>" type="button" class="btn btn-danger btn-sm"><i class="fa fa-trash"></i> Borrar</a>
                                                     </div>
+                                                </center>
                                 </div>
                                 </center>
                                 </td>
