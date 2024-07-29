@@ -2,6 +2,7 @@
 include ('../app/config.php');
 include ('../app/controllers/ventas/listado_de_ventas.php');
 include ('../app/controllers/almacen/lista_de_productos.php');
+include ('../app/controllers/clientes/lista_de_clientes.php');
 global$pdo;
 $URL = "http://localhost/www.sistemadeventas.com";
 session_start();
@@ -500,13 +501,20 @@ scratch. This page gets rid of all links and provides the needed markup only.
                                         <tbody>
                                         <?php
                                         $contador_de_carrito = 0;
+                                        $cantidad_total = 0;
+                                        $precio_unitario_total = 0;
+                                        $precio_subtotal_total = 0;
                                         $nro_venta = $contador_de_ventas + 1;
-                                        $sql_carrito = "SELECT *, pro.nombre as nombre_producto, pro.descripcion as descripcion_producto, pro.precio_venta as precio_producto FROM tb_carrito AS carr INNER JOIN tb_almacen as pro ON carr.id_producto = pro.id_producto WHERE nro_venta = '$nro_venta'";
+                                        $sql_carrito = "SELECT *, pro.nombre as nombre_producto, pro.descripcion as descripcion_producto, pro.precio_venta as precio_producto FROM tb_carrito AS carr INNER JOIN tb_almacen as pro ON carr.id_producto = pro.id_producto WHERE nro_venta = '$nro_venta' ORDER BY id_carrito DESC";
                                         $query_carrito = $pdo->prepare($sql_carrito);
                                         $query_carrito->execute();
                                         $carrito_datos = $query_carrito->fetchAll(PDO::FETCH_ASSOC);
                                         foreach ($carrito_datos as $carrito_dato){
-                                            $contador_de_carrito = $contador_de_carrito + 1 ?>
+                                            $id_carrito = $carrito_dato['id_carrito'];
+                                            $contador_de_carrito = $contador_de_carrito + 1;
+                                            $cantidad_total = $cantidad_total + $carrito_dato['cantidad'];
+                                            $precio_unitario_total = $precio_unitario_total + floatval($carrito_dato['precio_producto']);
+                                            ?>
                                             <tr>
                                                 <td><center><?php echo $contador_de_carrito; ?></center> </td>
                                                 <td><center><?php echo $carrito_dato['nombre_producto']; ?></center></td>
@@ -519,7 +527,16 @@ scratch. This page gets rid of all links and provides the needed markup only.
                                                         $cantidad = floatval($carrito_dato['cantidad']);
                                                         $precio_venta = floatval($carrito_dato['precio_producto']);
                                                         echo $subtotal = $cantidad * $precio_venta;
+                                                        $precio_subtotal_total = $precio_subtotal_total + $subtotal;
                                                         ?>
+                                                    </center>
+                                                </td>
+                                                <td>
+                                                    <center>
+                                                        <form action="../app/controllers/ventas/delete.php" method="post">
+                                                            <input type="text" name="id_carrito" value="<?php echo $id_carrito;?>" hidden>
+                                                            <button class="btn btn-danger btn-sm" type="submit"><i class="fa fa-trash"></i>Eliminar del carrito</button>
+                                                        </form>
                                                     </center>
                                                 </td>
                                             </tr>
@@ -527,9 +544,27 @@ scratch. This page gets rid of all links and provides the needed markup only.
                                         }
                                         ?>
                                         <th colspan="3" style="background-color: #e7e7e7;text-align: right">Total</th>
-                                        <th><center>4</center></th>
-                                        <th><center>10</center></th>
-                                        <th><center>20</center></th>
+                                        <th>
+                                            <center>
+                                                <?php
+                                                echo $cantidad_total;
+                                                ?>
+                                            </center>
+                                        </th>
+                                        <th>
+                                            <center>
+                                                <?php
+                                                echo $precio_unitario_total;
+                                                ?>
+                                            </center>
+                                        </th>
+                                        <th style="background-color: #FFF700">
+                                            <center>
+                                                <?php
+                                                echo $precio_subtotal_total;
+                                                ?>
+                                            </center>
+                                        </th>
                                         </tbody>
                                     </table>
                                 </div>
@@ -540,7 +575,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                 </div>
 
                 <div class="row">
-                    <div class="col-md-12">
+                    <div class="col-md-9">
                         <div class="card card-outline card-primary">
                             <div class="card-header">
                                 <h3 class="card-title"><i class="fa fa-user-check"></i> datos del cliente</h3>
@@ -553,11 +588,213 @@ scratch. This page gets rid of all links and provides the needed markup only.
                             </div>
 
                             <div class="card-body">
+                                <b>Cliente</b>
+                                <button type="button" class="btn btn-primary" data-toggle="modal"
+                                        data-target="#modal-buscar_cliente">
+                                    <i class="fa fa-search"></i>
+                                    Buscar cliente
+                                </button>
+                                <!-- modal para visualizar datos de los clientes -->
+                                <div class="modal fade" id="modal-buscar_cliente">
+                                    <div class="modal-dialog modal-lg">
+                                        <div class="modal-content modal-lg">
+                                            <div class="modal-header" style="background-color: #0742d6;color: white">
+                                                <h4 class="modal-title">Busqueda del cliente </h4>
+                                                <div style="; width: 10px"></div>
+                                                <button type="button" class="btn btn-info" style="font-weight: bold; color: #0a0e14; background-color: #e4d20b;" data-toggle="modal"
+                                                        data-target="#modal-agregar_cliente">
+                                                    <i class="fa fa-users" style="color: #0a0e14"></i>
+                                                    Agregar cliente
+                                                </button>
+                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <div class="card-body">
+                                                    <div class="table-responsive">
+                                                        <table id="example2" class="table table-bordered table-striped table-sm">
+                                                            <thead>
+                                                            <tr>
+                                                                <th class="text-center">Nro</th>
+                                                                <th class="text-center">Seleccionar</th>
+                                                                <th class="text-center">nombre_cliente</th>
+                                                                <th class="text-center">nit_ci_cliente</th>
+                                                                <th class="text-center">celular_cliente</th>
+                                                                <th class="text-center">email_cliente</th>
+                                                            </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                            <?php
+                                                            $contador_de_clientes = 0;
+                                                            foreach ($clientes_datos as $clientes_dato) {
+                                                                $id_cliente = $clientes_dato['id_cliente'];
+                                                                $contador_de_clientes = $contador_de_clientes + 1;
+                                                                ?>
+                                                                <tr>
+                                                                    <td class="text-center"><?php echo $contador_de_clientes; ?></td>
+                                                                    <td>
+                                                                        <button class="btn btn-info" id="btn_pasar_cliente<?php echo $id_cliente;?>">
+                                                                            Seleccionar
+                                                                        </button>
+                                                                        <script>
+                                                                            $(document).ready(function() {
+                                                                                $('#btn_pasar_cliente<?php echo $id_cliente; ?>').click(function() {
 
+                                                                                    var id_cliente = "<?php echo$id_cliente;?>";
+                                                                                    $('#id_cliente').val(id_cliente);
+
+                                                                                    var Nombre_Cliente = "<?php echo $clientes_dato['nombre_cliente'];?>";
+                                                                                    $('#nombre_cliente').val(Nombre_Cliente);
+
+                                                                                    var nit_ci_cliente = "<?php echo $clientes_dato['nit_ci_cliente'];?>";
+                                                                                    $('#nit_ci_cliente').val(nit_ci_cliente);
+
+
+                                                                                    var celular_cliente = "<?php echo $clientes_dato['celular_cliente'];?>";
+                                                                                    $('#celular_cliente').val(celular_cliente);
+
+                                                                                    var email_cliente = "<?php echo $clientes_dato['email_cliente'];?>";
+                                                                                    $('#email_cliente').val(email_cliente);
+
+                                                                                    $('#modal-buscar_cliente').modal('toggle');
+                                                                                });
+                                                                            });
+                                                                        </script>
+                                                                    </td>
+                                                                    <td class="text-center"><?php echo $clientes_dato['nombre_cliente']; ?></td>
+                                                                    <td class="text-center"><?php echo $clientes_dato['nit_ci_cliente']; ?></td>
+                                                                    <td class="text-center"><?php echo $clientes_dato['celular_cliente']; ?></td>
+                                                                    <td class="text-center"><?php echo $clientes_dato['email_cliente']; ?></td>
+                                                                </tr>
+                                                            <?php } ?>
+                                                            </tbody>
+                                                        </table>
+                                                        <br><br>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!-- /.modal-content -->
+                                    </div>
+                                    <!-- /.modal-dialog -->
+                                </div>
+                                <br>
+                                <br>
+                                <div class="row">
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <input type="text" id="id_cliente" hidden>
+                                            <label for="">Nombre Cliente</label>
+                                            <input type="text" class="form-control" id="nombre_cliente">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label for="">Nit/Ci Cliente</label>
+                                            <input type="text" class="form-control" id="nit_ci_cliente">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label for="">Celular Cliente</label>
+                                            <input type="text" class="form-control" id="celular_cliente">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label for="">Email</label>
+                                            <input type="text" class="form-control" id="email_cliente">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card card-outline card-primary">
+                            <div class="card-header">
+                                <h3 class="card-title"><i class="fa fa-shopping-basket"></i> Registrar Venta</h3>
+                                <div class="card-tools">
+                                    <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                                        <i class="fas fa-minus"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="card-body">
+                                <div class="form-group">
+                                    <label for="">Monto A Cancelar</label>
+                                    <input style="background-color: #FFF700; font-weight: bold;" type="text" id="total_a_cancelar" class="form-control" value="<?php echo $precio_subtotal_total?>" disabled>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <label for="">Total Pagado</label>
+                                        <input type="text" id="total_pagado" class="form-control">
+                                        <script>
+                                            $(document).ready(function() {
+                                                $('#total_pagado').keyup(function() {
+                                                    var total_pagado = $('#total_pagado').val();
+
+                                                    if (total_pagado === '') {
+                                                        $('#cambio').val('');
+                                                        return;
+                                                    }
+
+                                                    var total_a_cancelar = parseFloat($('#total_a_cancelar').val()) || 0;
+                                                    total_pagado = parseFloat(total_pagado) || 0;
+
+                                                    var cambio = total_pagado - total_a_cancelar;
+                                                    $('#cambio').val(cambio.toFixed(2));
+                                                });
+                                            });
+                                        </script>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="">Cambio</label>
+                                        <input type="text" id="cambio" class="form-control" disabled>
+                                    </div>
+                                </div>
+                                <hr>
+                                <div class="form-group">
+                                    <button id="btn_guardar_venta" class="btn btn-primary btn-block">Guardar Venta</button>
+                                    <div id="respuesta_registro_de_ventas"></div>
+                                    <script>
+                                        $('#btn_guardar_venta').click(function (){
+
+                                            var nro_venta = "<?php echo $contador_de_ventas + 1;?>";
+                                            var id_cliente = $('#id_cliente').val();
+                                            var total_a_cancelar = $('#total_a_cancelar').val();
+
+                                            if (id_cliente == ""){
+                                                alert("Debe seleccionar un cliente")
+                                            }
+                                            else {
+                                               guardar_venta();
+                                            }
+
+                                            function actualizar_stock(){
+
+                                            }
+
+                                            function guardar_venta(){
+                                                var url = "../app/controllers/ventas/registro_de_ventas.php";
+                                                $.post(url, {
+                                                    nro_venta: nro_venta,
+                                                    id_cliente: id_cliente,
+                                                    total_a_cancelar: total_a_cancelar
+                                                }, function (datos) {
+                                                    $('#respuesta_registro_de_ventas').html(datos);
+                                                });
+                                            }
+                                        })
+                                    </script>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
+
                 <!-- /.row -->
             </div><!-- /.container-fluid -->
         </div>
@@ -654,12 +891,12 @@ if (isset($_SESSION['mensaje'])){
             "pageLength": 5,
             "language": {
                 "emptyTable": "No hay información",
-                "info": "Mostrando _START_ a _END_ de _TOTAL_ Proveedores",
-                "infoEmpty": "Mostrando 0 a 0 de 0 Proveedores",
-                "infoFiltered": "(Filtrado de _MAX_ total Proveedores)",
+                "info": "Mostrando _START_ a _END_ de _TOTAL_ Clientes",
+                "infoEmpty": "Mostrando 0 a 0 de 0 Clientes",
+                "infoFiltered": "(Filtrado de _MAX_ total Clientes)",
                 "infoPostFix": "",
                 "thousands": ",",
-                "lengthMenu": "Mostrar _MENU_ Proveedores",
+                "lengthMenu": "Mostrar _MENU_ Clientes",
                 "loadingRecords": "Cargando...",
                 "processing": "Procesando...",
                 "search": "Buscador:",
@@ -677,5 +914,68 @@ if (isset($_SESSION['mensaje'])){
     });
 
 </script>
+
+
+
+<!-- modal para agregar datos de los clientes -->
+<div class="modal fade" id="modal-agregar_cliente">
+    <center>
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content modal-sm">
+                <div class="modal-header" style="background-color: #cfa407;color: white">
+                    <h4 class="modal-title" style="font-weight: bold; color: #0a0e14;">Nuevo cliente </h4>
+                    <div style="; width: 10px"></div>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="card-body">
+                        <form action="../app/controllers/clientes/guardar_clientes.php" method="post">
+                            <div class="form-group">
+                                <label for="">Nombre del cliente</label>
+                                <input type="text" name="nombre_cliente" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label for="">Nit/Ci del cliente</label>
+                                <input type="text" name="nit_ci_cliente" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label for="">Celular del cliente</label>
+                                <input type="text" name="celular_cliente" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label for="">Email del cliente</label>
+                                <input type="email" name="email_cliente" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <button class="btn btn-warning btn-block" type="submit" style="font-weight: bold; color: #0a0e14; background-color: #e4d20b;">Guardar Cliente</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </center>
+
+
+
+    <?php
+    if (isset($_SESSION['mensaje'])){
+        $respuesta = $_SESSION['mensaje'];
+        unset($_SESSION['mensaje']); // Eliminar el mensaje después de mostrarlo
+        ?>
+        <script>
+            Swal.fire({
+                icon: "error",
+                title: "<?php echo $respuesta; ?>",
+                text: "¡Algo salió mal!",
+            })
+        </script>
+        <?php
+    }
+    ?>
 </body>
 </html>

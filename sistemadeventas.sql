@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 28-07-2024 a las 04:46:15
+-- Tiempo de generación: 29-07-2024 a las 05:35:37
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -50,9 +50,7 @@ CREATE TABLE `tb_almacen` (
 --
 
 INSERT INTO `tb_almacen` (`id_producto`, `codigo`, `nombre`, `descripcion`, `stock`, `stock_minimo`, `stock_maximo`, `precio_compra`, `precio_venta`, `fecha_ingreso`, `imagen`, `id_categoria`, `id_usuario`, `fyh_creacion`, `fyh_actualizacon`) VALUES
-(1, 'P-00001', 'Coro Sensei XL', 'un poster anime con luces', 9, 9, 20, '45', '50', '2024-07-24', '2024-07-24-09-55-03__f4c14c1770ba7a8c4eca29b284d9161c.jpg', 12, 1, '2024-07-24 21:55:03', '2024-07-26 09:46:50'),
-(2, 'P-00002', 'foto', 'una foto', 55, 5, 20, '12', '15', '2024-07-25', '2024-07-25-12-15-46__hAiX3Ao7jL6PgXRYsPALEQj-kbnTSo6afcwTZWukASg.webp', 13, 1, '2024-07-25 12:15:46', '0000-00-00 00:00:00'),
-(3, 'P-00003', 'juguito', 'un jugo con sabor a refresco', 20, 5, 30, '50', '60', '2024-07-26', '2024-07-26-09-52-33__drink-soda-fast-food-cartoon-illustration-vector.jpg', 10, 1, '2024-07-26 09:52:33', '2024-07-27 22:39:35');
+(4, 'P-00001', 'Audifonos', 'Audifonos gamer inalambricos de buena calidad', 30, 5, 30, '15', '20', '2024-07-28', '2024-07-28-11-25-49__p36-33.jpg', 16, 4, '2024-07-28 23:25:49', '0000-00-00 00:00:00');
 
 -- --------------------------------------------------------
 
@@ -74,9 +72,7 @@ CREATE TABLE `tb_carrito` (
 --
 
 INSERT INTO `tb_carrito` (`id_carrito`, `nro_venta`, `id_producto`, `cantidad`, `fyh_creacion`, `fyh_actualizacion`) VALUES
-(2, 1, 2, 2, '2024-07-27 21:34:39', '0000-00-00 00:00:00'),
-(3, 1, 3, 5, '2024-07-27 22:39:07', '0000-00-00 00:00:00'),
-(4, 1, 1, 20, '2024-07-27 22:39:17', '0000-00-00 00:00:00');
+(8, 1, 4, 10, '2024-07-28 23:26:59', '0000-00-00 00:00:00');
 
 -- --------------------------------------------------------
 
@@ -96,13 +92,7 @@ CREATE TABLE `tb_categorias` (
 --
 
 INSERT INTO `tb_categorias` (`id_categoria`, `nombre_categoria`, `fyh_creacion`, `fyh_actualizacion`) VALUES
-(9, 'MEDICAMENTOS', '2024-07-20 15:49:54', '0000-00-00 00:00:00'),
-(10, 'LIQUIDOS', '2024-07-20 15:50:03', '2024-07-20 17:07:39'),
-(11, 'VERDURAS', '2024-07-20 20:31:57', '2024-07-20 20:46:23'),
-(12, 'ELECTRONICO', '2024-07-21 16:30:19', '0000-00-00 00:00:00'),
-(13, 'COLECCION', '2024-07-21 18:39:24', '2024-07-21 21:33:31'),
-(14, 'DULCES', '2024-07-23 19:40:09', '0000-00-00 00:00:00'),
-(15, 'FRUTAS', '2024-07-26 09:50:03', '0000-00-00 00:00:00');
+(16, 'ELECTRONICOS', '2024-07-28 23:18:10', '0000-00-00 00:00:00');
 
 -- --------------------------------------------------------
 
@@ -125,7 +115,7 @@ CREATE TABLE `tb_clientes` (
 --
 
 INSERT INTO `tb_clientes` (`id_cliente`, `nombre_cliente`, `nit_ci_cliente`, `celular_cliente`, `email_cliente`, `fyh_creacion`, `fyh_actualizacion`) VALUES
-(1, 'juan', '121212', '0424517854', 'juan@gmail', '2024-07-26 06:34:37', '2024-07-26 06:34:37');
+(8, 'clienteprueba', '0000', '0424', 'prueba@gmail.com', '2024-07-28 23:27:58', '0000-00-00 00:00:00');
 
 -- --------------------------------------------------------
 
@@ -152,9 +142,7 @@ CREATE TABLE `tb_compras` (
 --
 
 INSERT INTO `tb_compras` (`id_compra`, `id_producto`, `nro_compra`, `fecha_compra`, `id_proveedor`, `comprobante`, `id_usuario`, `precio_compra`, `cantidad`, `fyh_creacion`, `fyh_actualizacion`) VALUES
-(2, 2, 1, '2024-07-25 00:00:00', 2, 'F', 1, '1000', 10, '2024-07-25 19:19:23', '0000-00-00 00:00:00'),
-(3, 2, 2, '2024-07-25 00:00:00', 2, 'Factura nro 100', 1, '1000', 25, '2024-07-25 19:41:17', '0000-00-00 00:00:00'),
-(4, 2, 3, '2024-07-26 00:00:00', 3, 'Factura nro 100', 1, '1000', 10, '2024-07-26 09:45:47', '0000-00-00 00:00:00');
+(5, 4, 1, '2024-07-28 00:00:00', 4, 'Factura nro 1', 4, '15', 10, '2024-07-28 23:26:44', '0000-00-00 00:00:00');
 
 -- --------------------------------------------------------
 
@@ -179,8 +167,7 @@ CREATE TABLE `tb_proveedores` (
 --
 
 INSERT INTO `tb_proveedores` (`id_proveedor`, `nombre_proveedor`, `celular`, `telefono`, `empresa`, `email`, `direccion`, `fyh_creacion`, `fyh_actualizacion`) VALUES
-(2, 'Leon', '04245197469', '0424242424', 'LeonCueros', 'leoncueros@gamil.com', 'Calle 20 con 25', '2024-07-24 21:34:24', 0),
-(3, 'juan', '044444', '0424242424', 'juan CAlor em', 'yolo@gmail.com', 'calle 20', '2024-07-26 09:45:05', 0);
+(4, 'provedorprueba', '0410', '0424', 'empresaprueba', 'prueba@gmail.com', 'direccion prueba', '2024-07-28 23:19:24', 0);
 
 -- --------------------------------------------------------
 
@@ -200,11 +187,7 @@ CREATE TABLE `tb_roles` (
 --
 
 INSERT INTO `tb_roles` (`id_rol`, `rol`, `fyh_creacion`, `fyh_actualizacion`) VALUES
-(1, 'ADMINISTRADOR', '2024-07-17 15:28:19', '2024-07-20 12:02:12'),
-(2, 'CLIENTE', '2024-07-17 11:30:33', '2024-07-19 14:18:15'),
-(3, 'VENDEDOR', '2024-07-19 19:13:43', '2024-07-20 12:02:22'),
-(4, 'ALMACEN', '2024-07-19 21:15:46', '0000-00-00 00:00:00'),
-(5, 'REPARTIDOR', '2024-07-23 19:39:34', '2024-07-23 19:39:53');
+(1, 'ADMINISTRADOR', '2024-07-17 15:28:19', '2024-07-20 12:02:12');
 
 -- --------------------------------------------------------
 
@@ -230,8 +213,7 @@ CREATE TABLE `tb_usuarios` (
 --
 
 INSERT INTO `tb_usuarios` (`id_usuario`, `nombres`, `telefono`, `cedula`, `email`, `password_user`, `token`, `id_rol`, `fyh_creacion`, `fyh_actualizacion`) VALUES
-(1, 'David Mendoza Gomez', '04245184163', '29805044', 'mendozadavidprogramacion2.0@gmail.com', '$2y$10$mrRY2XwsG0fQyxR3YaOMxuHx3.qIL0i.bsCYOPa3HJ.Va7fUUmxlu', '', 1, '2024-07-20 17:56:10', '2024-07-26 09:38:53'),
-(3, 'Abner Saavedra', '04243174302', '20350193', 'abnersaavedra777@gmail', '$2y$10$l1rhXPo7B5q837Y61f/Ide9IEk0A2I13uAPuvM7RrMOATZxi4t1du', '', 4, '2024-07-26 09:40:15', '2024-07-26 09:40:27');
+(4, 'userprueba', '0424', '0000000', 'userprueba@gmail.com', '$2y$10$Keg.s6HzI7sPr4XfkDq0eOmHa/HwUFfPS5XX7eSGNFBmTQlp6.aXO', '', 1, '2024-07-28 23:17:04', '0000-00-00 00:00:00');
 
 -- --------------------------------------------------------
 
@@ -247,6 +229,13 @@ CREATE TABLE `tb_ventas` (
   `fyh_creacion` datetime NOT NULL,
   `fyh_actualizacion` datetime NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
+
+--
+-- Volcado de datos para la tabla `tb_ventas`
+--
+
+INSERT INTO `tb_ventas` (`id_venta`, `nro_venta`, `id_cliente`, `total_pagado`, `fyh_creacion`, `fyh_actualizacion`) VALUES
+(2, 1, 8, 200, '2024-07-28 23:28:07', '0000-00-00 00:00:00');
 
 --
 -- Índices para tablas volcadas
@@ -324,37 +313,37 @@ ALTER TABLE `tb_ventas`
 -- AUTO_INCREMENT de la tabla `tb_almacen`
 --
 ALTER TABLE `tb_almacen`
-  MODIFY `id_producto` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id_producto` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT de la tabla `tb_carrito`
 --
 ALTER TABLE `tb_carrito`
-  MODIFY `id_carrito` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id_carrito` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT de la tabla `tb_categorias`
 --
 ALTER TABLE `tb_categorias`
-  MODIFY `id_categoria` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+  MODIFY `id_categoria` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
 -- AUTO_INCREMENT de la tabla `tb_clientes`
 --
 ALTER TABLE `tb_clientes`
-  MODIFY `id_cliente` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id_cliente` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT de la tabla `tb_compras`
 --
 ALTER TABLE `tb_compras`
-  MODIFY `id_compra` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id_compra` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT de la tabla `tb_proveedores`
 --
 ALTER TABLE `tb_proveedores`
-  MODIFY `id_proveedor` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id_proveedor` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT de la tabla `tb_roles`
@@ -366,13 +355,13 @@ ALTER TABLE `tb_roles`
 -- AUTO_INCREMENT de la tabla `tb_usuarios`
 --
 ALTER TABLE `tb_usuarios`
-  MODIFY `id_usuario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id_usuario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT de la tabla `tb_ventas`
 --
 ALTER TABLE `tb_ventas`
-  MODIFY `id_venta` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_venta` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- Restricciones para tablas volcadas
